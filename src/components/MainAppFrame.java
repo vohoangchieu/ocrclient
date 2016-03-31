@@ -17,7 +17,6 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.Toolkit;
 
 import javax.imageio.ImageIO;
@@ -43,6 +42,7 @@ import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.border.LineBorder;
 import org.apache.log4j.Logger;
 
 @SuppressWarnings("serial")
@@ -60,6 +60,10 @@ public class MainAppFrame extends JFrame {
     private final JButton buttonRecognize = new JButton("Recognize");
     private final JButton btnReSelectColor = new JButton("Re Select Color");
     private JLabel imageOutputLabel = new JLabel();
+    private final int IMAGE_WIDTH = 550;
+    private final int IMAGE_HEIGHT = 350;
+    private final LineBorder LINE_BORDER = new LineBorder(new java.awt.Color(0, 0, 0), 1, true);
+    private final LineBorder LINE_BORDER_BOLD = new LineBorder(new java.awt.Color(255, 255, 255), 2, true);
 
     /**
      * Launch the application.
@@ -90,9 +94,9 @@ public class MainAppFrame extends JFrame {
         contentPane.setLayout(new BorderLayout(0, 0));
 
         westPanel = new JPanel();
-        westPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        westPanel.setBorder(LINE_BORDER);
         eastPanel = new JPanel();
-        eastPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        eastPanel.setBorder(LINE_BORDER);
         contentPane.add(westPanel, BorderLayout.WEST);
         contentPane.add(eastPanel, BorderLayout.EAST);
 
@@ -111,7 +115,7 @@ public class MainAppFrame extends JFrame {
                 color1 = null;
                 color2 = null;
                 for (JButton jButton : colorButtonList) {
-                    jButton.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+                    jButton.setBorder(LINE_BORDER);
                 }
 
             }
@@ -155,13 +159,13 @@ public class MainAppFrame extends JFrame {
         });
         imageOutputPanel = new JPanel();
         imageOutputPanel.add(imageOutputLabel);
-        imageOutputPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        imageOutputPanel.setBorder(LINE_BORDER);
         GroupLayout eastLayout = new GroupLayout(eastPanel);
-        eastLayout.setHorizontalGroup(eastLayout.createSequentialGroup().addComponent(imageOutputPanel, GroupLayout.PREFERRED_SIZE, 600, GroupLayout.PREFERRED_SIZE));
-        eastLayout.setVerticalGroup(eastLayout.createSequentialGroup().addComponent(imageOutputPanel, GroupLayout.PREFERRED_SIZE, 400, GroupLayout.PREFERRED_SIZE));
+        eastLayout.setHorizontalGroup(eastLayout.createSequentialGroup().addComponent(imageOutputPanel, GroupLayout.PREFERRED_SIZE, IMAGE_WIDTH, GroupLayout.PREFERRED_SIZE));
+        eastLayout.setVerticalGroup(eastLayout.createSequentialGroup().addComponent(imageOutputPanel, GroupLayout.PREFERRED_SIZE, IMAGE_HEIGHT, GroupLayout.PREFERRED_SIZE));
         eastPanel.setLayout(eastLayout);
         imageInputPanel = new JPanel();
-        imageInputPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        imageInputPanel.setBorder(LINE_BORDER);
         colorPanel = new JPanel(new GridBagLayout());
         GroupLayout westLayout = new GroupLayout(westPanel);
         westLayout.setHorizontalGroup(westLayout.createParallelGroup(Alignment.LEADING)
@@ -188,10 +192,10 @@ public class MainAppFrame extends JFrame {
 
                 .addGroup(westLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(imageInputPanel, GroupLayout.PREFERRED_SIZE, 600, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(imageInputPanel, GroupLayout.PREFERRED_SIZE, IMAGE_WIDTH, GroupLayout.PREFERRED_SIZE))
                 .addGroup(westLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(colorPanel, GroupLayout.PREFERRED_SIZE, 600, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(colorPanel, GroupLayout.PREFERRED_SIZE, IMAGE_WIDTH, GroupLayout.PREFERRED_SIZE))
         );
         westLayout.setVerticalGroup(westLayout.createParallelGroup(Alignment.LEADING)
                 .addGroup(westLayout.createSequentialGroup()
@@ -203,7 +207,7 @@ public class MainAppFrame extends JFrame {
                                         //.addGap(3)
                                         .addComponent(btnBrowse)))
                         //.addGap(18)
-                        .addComponent(imageInputPanel, GroupLayout.PREFERRED_SIZE, 350, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(imageInputPanel, GroupLayout.PREFERRED_SIZE, IMAGE_HEIGHT, GroupLayout.PREFERRED_SIZE)
                         .addComponent(colorPanel, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
                         .addGap(20)
                         .addGroup(westLayout.createParallelGroup(Alignment.BASELINE)
@@ -222,7 +226,7 @@ public class MainAppFrame extends JFrame {
             MyColor myColor = ColorLoader.colorList.get(i);
             JButton button = new JButton();
             button.setPreferredSize(new Dimension(20, 20));
-            button.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+            button.setBorder(LINE_BORDER);
             button.setBackground(myColor.color);
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -232,7 +236,7 @@ public class MainAppFrame extends JFrame {
                     }
                     JButton button = (JButton) e.getSource();
                     Color color = button.getBackground();
-                    button.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 3, true));
+                    button.setBorder(LINE_BORDER_BOLD);
 
                     if (color1 == null) {
                         color1 = color;
@@ -263,11 +267,16 @@ public class MainAppFrame extends JFrame {
     }
 
     public BufferedImage rescale(BufferedImage originalImage) {
-//        BufferedImage resizedImage = new BufferedImage(baseSize, baseSize, BufferedImage.TYPE_INT_RGB);
-//        Graphics2D g = resizedImage.createGraphics();
-//        g.drawImage(originalImage, 0, 0, baseSize, baseSize, null);
-//        g.dispose();
-//        return resizedImage;
+        if (originalImage.getWidth() > IMAGE_WIDTH) {
+            int width = IMAGE_WIDTH;
+            int height = (int) ((float) IMAGE_WIDTH / (float) originalImage.getWidth() * originalImage.getHeight());
+            BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = resizedImage.createGraphics();
+            g.drawImage(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), null);
+            g.dispose();
+            return resizedImage;
+        }
+
         return originalImage;
     }
 
